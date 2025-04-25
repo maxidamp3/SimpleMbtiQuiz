@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>MBTI Тест</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      transition: background-color 1s ease;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      margin: 20px auto;
+      position: relative;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .logo::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: black;
+      border-radius: 50%;
+    }
+    .question {
+      margin: 20px 0;
+      opacity: 0;
+      animation: fadeIn 0.8s ease-in-out forwards;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: white;
+      color: black;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      background-color: #ddd;
+    }
+    #result, #history {
+      margin-top: 30px;
+      font-size: 20px;
+      font-weight: bold;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+    .history-entry {
+      margin-top: 15px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo"></div>
+  <h1>Пройди MBTI Тест</h1>  <div id="nameInput">
+    <p>Введите ваше имя:</p>
+    <input type="text" id="userName" placeholder="Имя" />
+    <br><br>
+    <button onclick="startQuiz()">Начать</button>
+  </div>  <div id="quiz" style="display:none;"></div>
+  <div id="result"></div>
+  <div id="history"></div>
+  <button id="restartBtn" style="display:none; margin-top: 20px;" onclick="restartQuiz()">Пройти ещё раз</button>  <script>
+    const questions = [
+      { text: "Вы предпочитаете проводить время в одиночестве, а не в компании?", dimension: "I" },
+      { text: "Вам нравится быть в центре внимания?", dimension: "E" },
+      { text: "Вы больше доверяете логике, чем чувствам?", dimension: "T" },
+      { text: "Вы полагаетесь на свою интуицию чаще, чем на факты?", dimension: "N" },
+      { text: "Вы любите планировать и придерживаться расписания?", dimension: "J" },
+      { text: "Вы предпочитаете быть спонтанным и гибким?", dimension: "P" },
+      { text: "Вы часто выражаете сочувствие и заботу?", dimension: "F" },
+      { text: "Вы замечаете мелкие детали в окружающем мире?", dimension: "S" },
+      { text: "Вы заряжаетесь от общения с людьми?", dimension: "E" },
+      { text: "Вы часто теряетесь в своих мыслях?", dimension: "I" }
+    ];
+
+    const results = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    let currentQuestion = 0;
+    let userName = '';
+    let history = [];
+
+    function startQuiz() {
+      userName = document.getElementById('userName').value.trim();
+      if (!userName) {
+        alert('Пожалуйста, введите имя.');
+        return;
+      }
+      document.getElementById('nameInput').style.display = 'none';
+      document.getElementById('quiz').style.display = 'block';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const quizDiv = document.getElementById('quiz');
+      quizDiv.innerHTML = '';
+      if (currentQuestion < questions.length) {
+        const q = questions[currentQuestion];
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.innerHTML = `<p>${q.text}</p>`;
+        const yesBtn = document.createElement('button');
+        yesBtn.textContent = 'Да';
+        yesBtn.onclick = () => { results[q.dimension]++; currentQuestion++; showQuestion(); };
+        const noBtn = document.createElement('button');
+        noBtn.textContent = 'Нет';
+        noBtn.onclick = () => { currentQuestion++; showQuestion(); };
+        qDiv.appendChild(yesBtn);
+        qDiv.appendChild(noBtn);
+        quizDiv.appendChild(qDiv);
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const mbti = (results.E > results.I ? 'E' : 'I') +
+                   (results.S > results.N ? 'S' : 'N') +
+                   (results.T > results.F ? 'T' : 'F') +
+                   (results.J > results.P ? 'J' : 'P');
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `<p>${userName}, ваш MBTI тип: ${mbti}</p>`;
+      resultDiv.style.opacity = '1';
+
+      changeBackgroundColor(mbti);
+
+      history.push({ name: userName, type: mbti });
+      updateHistory();
+      document.getElementById('restartBtn').style.display = 'inline-block';
+    }
+
+    function updateHistory() {
+      const historyDiv = document.getElementById('history');
+      historyDiv.innerHTML = '<h3>Предыдущие результаты:</h3>';
+      history.forEach(entry => {
+        historyDiv.innerHTML += `
+          <div class="history-entry">
+            <p>${entry.name}: ${entry.type}</p>
+          </div>`;
+      });
+      historyDiv.style.opacity = '1';
+    }
+
+    function restartQuiz() {
+      Object.keys(results).forEach(key => results[key] = 0);
+      currentQuestion = 0;
+      document.getElementById('quiz').innerHTML = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('result').style.opacity = '0';
+      document.getElementById('quiz').style.display = 'none';
+      document.getElementById('restartBtn').style.display = 'none';
+      document.getElementById('nameInput').style.display = 'block';
+      document.getElementById('userName').value = '';
+      document.body.style.backgroundColor = 'black';
+    }
+
+    function changeBackgroundColor(type) {
+      const colors = {
+        INTJ: '#2c3e50', ENTJ: '#8e44ad', INTP: '#2980b9', ENTP: '#16a085',
+        INFJ: '#27ae60', ENFJ: '#d35400', INFP: '#f39c12', ENFP: '#e67e22',
+        ISTJ: '#34495e', ESTJ: '#c0392b', ISFJ: '#7f8c8d', ESFJ: '#bdc3c7',
+        ISTP: '#1abc9c', ESTP: '#9b59b6', ISFP: '#f1c40f', ESFP: '#e74c3c'
+      };
+      document.body.style.backgroundColor = colors[type] || 'black';
+    }
+  </script></body>
+</html>
