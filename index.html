@@ -1,183 +1,184 @@
 <!DOCTYPE html><html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>MBTI Тест</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      transition: background-color 1s ease;
+<meta charset="UTF-8">
+<title>MBTI Тест</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    transition: background-color 1s;
+  }
+  .logo {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    margin: 20px auto;
+    position: relative;
+  }
+  .logo::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: black;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .question, .start, .result, .explanation, .restart {
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1s forwards;
+  }
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
-    .logo {
-      width: 80px;
-      height: 80px;
-      background: white;
-      border-radius: 50%;
-      margin: 20px auto;
-      position: relative;
-      animation: fadeIn 1s ease-in-out;
-    }
-    .logo::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 20px;
-      height: 20px;
-      background: black;
-      border-radius: 50%;
-    }
-    .question {
-      margin: 20px 0;
-      opacity: 0;
-      animation: fadeIn 0.8s ease-in-out forwards;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      background-color: white;
-      color: black;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: transform 0.3s, background-color 0.3s;
-    }
-    button:hover {
-      transform: scale(1.05);
-      background-color: #ddd;
-    }
-    #result, #history {
-      margin-top: 30px;
-      font-size: 20px;
-      font-weight: bold;
-      opacity: 0;
-      animation: fadeIn 1s ease-in-out forwards;
-    }
-    .history-entry {
-      margin-top: 15px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+  }
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: white;
+    color: black;
+    transition: background 0.3s, color 0.3s;
+  }
+  button:hover {
+    background: grey;
+    color: white;
+  }
+</style>
 </head>
 <body>
-  <div class="logo"></div>
-  <h1>Пройди MBTI Тест</h1>  <div id="nameInput">
-    <p>Введите ваше имя:</p>
-    <input type="text" id="userName" placeholder="Имя" />
-    <br><br>
-    <button onclick="startQuiz()">Начать</button>
-  </div>  <div id="quiz" style="display:none;"></div>
-  <div id="result"></div>
-  <div id="history"></div>
-  <button id="restartBtn" style="display:none; margin-top: 20px;" onclick="restartQuiz()">Пройти ещё раз</button>  <script>
-    const questions = [
-      { text: "Вы предпочитаете проводить время в одиночестве, а не в компании?", dimension: "I" },
-      { text: "Вам нравится быть в центре внимания?", dimension: "E" },
-      { text: "Вы больше доверяете логике, чем чувствам?", dimension: "T" },
-      { text: "Вы полагаетесь на свою интуицию чаще, чем на факты?", dimension: "N" },
-      { text: "Вы любите планировать и придерживаться расписания?", dimension: "J" },
-      { text: "Вы предпочитаете быть спонтанным и гибким?", dimension: "P" },
-      { text: "Вы часто выражаете сочувствие и заботу?", dimension: "F" },
-      { text: "Вы замечаете мелкие детали в окружающем мире?", dimension: "S" },
-      { text: "Вы заряжаетесь от общения с людьми?", dimension: "E" },
-      { text: "Вы часто теряетесь в своих мыслях?", dimension: "I" }
-    ];
+<div class="logo"></div>
+<h1 class="start">Добро пожаловать в MBTI тест!</h1>
+<p class="start">MBTI (Myers-Briggs Type Indicator) — это тест, определяющий ваш психологический тип на основе четырёх шкал:</p>
+<ul class="start" style="list-style: none; padding: 0;">
+  <li>Экстраверсия (E) / Интроверсия (I)</li>
+  <li>Ощущение (S) / Интуиция (N)</li>
+  <li>Логика (T) / Чувства (F)</li>
+  <li>Решительность (J) / Спонтанность (P)</li>
+</ul>
+<input id="nameInput" class="start" type="text" placeholder="Введите ваше имя" style="margin-top: 20px; padding: 10px;">
+<br>
+<button class="start" onclick="startTest()">Начать тест</button><div id="quiz" style="display:none;"></div>
+<div id="result" class="result" style="display:none;"></div>
+<div id="explanation" class="explanation" style="display:none;"></div>
+<div id="history" style="margin-top: 40px;"></div><script>
+const questions = [
+  { text: "Вы чувствуете себя энергичнее среди людей?", dimension: "E" },
+  { text: "Вам проще полагаться на факты, чем на догадки?", dimension: "S" },
+  { text: "Вы предпочитаете решения на основе логики, а не эмоций?", dimension: "T" },
+  { text: "Вы планируете наперёд, а не действуете спонтанно?", dimension: "J" },
+  { text: "Вы заряжаетесь энергией, когда находитесь в одиночестве?", dimension: "I" },
+  { text: "Вы больше доверяете своей интуиции?", dimension: "N" },
+  { text: "В решениях вы ориентируетесь на чувства?", dimension: "F" },
+  { text: "Вам нравится оставлять варианты открытыми?", dimension: "P" }
+];
 
-    const results = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-    let currentQuestion = 0;
-    let userName = '';
-    let history = [];
+let currentQuestion = 0;
+let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+let userName = "";
 
-    function startQuiz() {
-      userName = document.getElementById('userName').value.trim();
-      if (!userName) {
-        alert('Пожалуйста, введите имя.');
-        return;
-      }
-      document.getElementById('nameInput').style.display = 'none';
-      document.getElementById('quiz').style.display = 'block';
-      showQuestion();
-    }
+function startTest() {
+  userName = document.getElementById('nameInput').value;
+  if (!userName) {
+    alert("Пожалуйста, введите имя!");
+    return;
+  }
+  document.querySelectorAll('.start').forEach(el => el.style.display = 'none');
+  document.getElementById('quiz').style.display = 'block';
+  showQuestion();
+}
 
-    function showQuestion() {
-      const quizDiv = document.getElementById('quiz');
-      quizDiv.innerHTML = '';
-      if (currentQuestion < questions.length) {
-        const q = questions[currentQuestion];
-        const qDiv = document.createElement('div');
-        qDiv.className = 'question';
-        qDiv.innerHTML = `<p>${q.text}</p>`;
-        const yesBtn = document.createElement('button');
-        yesBtn.textContent = 'Да';
-        yesBtn.onclick = () => { results[q.dimension]++; currentQuestion++; showQuestion(); };
-        const noBtn = document.createElement('button');
-        noBtn.textContent = 'Нет';
-        noBtn.onclick = () => { currentQuestion++; showQuestion(); };
-        qDiv.appendChild(yesBtn);
-        qDiv.appendChild(noBtn);
-        quizDiv.appendChild(qDiv);
-      } else {
-        showResult();
-      }
-    }
+function showQuestion() {
+  if (currentQuestion >= questions.length) {
+    showResult();
+    return;
+  }
+  const q = questions[currentQuestion];
+  document.getElementById('quiz').innerHTML = `
+    <h2>${q.text}</h2>
+    <button onclick="answer('yes')">Да</button>
+    <button onclick="answer('no')">Нет</button>
+  `;
+}
 
-    function showResult() {
-      const mbti = (results.E > results.I ? 'E' : 'I') +
-                   (results.S > results.N ? 'S' : 'N') +
-                   (results.T > results.F ? 'T' : 'F') +
-                   (results.J > results.P ? 'J' : 'P');
+function answer(response) {
+  const q = questions[currentQuestion];
+  if (response === 'yes') {
+    scores[q.dimension]++;
+  } else {
+    const opposite = getOpposite(q.dimension);
+    scores[opposite]++;
+  }
+  currentQuestion++;
+  showQuestion();
+}
 
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `<p>${userName}, ваш MBTI тип: ${mbti}</p>`;
-      resultDiv.style.opacity = '1';
+function getOpposite(dim) {
+  const pairs = { E:'I', I:'E', S:'N', N:'S', T:'F', F:'T', J:'P', P:'J' };
+  return pairs[dim];
+}
 
-      changeBackgroundColor(mbti);
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  const mbti =
+    (scores.E >= scores.I ? 'E' : 'I') +
+    (scores.S >= scores.N ? 'S' : 'N') +
+    (scores.T >= scores.F ? 'T' : 'F') +
+    (scores.J >= scores.P ? 'J' : 'P');
+  changeBackground(mbti);
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').innerHTML = `<h2>${userName}, ваш тип: ${mbti}</h2>
+    <button onclick="restart()">Пройти ещё раз</button>`;
 
-      history.push({ name: userName, type: mbti });
-      updateHistory();
-      document.getElementById('restartBtn').style.display = 'inline-block';
-    }
+  document.getElementById('explanation').style.display = 'block';
+  document.getElementById('explanation').innerHTML = `
+    <h3>Что означают буквы в вашем типе:</h3>
+    <p><b>E</b> — Экстраверсия: энергия из общения<br>
+    <b>I</b> — Интроверсия: энергия из уединения<br>
+    <b>S</b> — Ощущение: внимание к фактам<br>
+    <b>N</b> — Интуиция: внимание к возможностям<br>
+    <b>T</b> — Логика: решения разумом<br>
+    <b>F</b> — Чувства: решения сердцем<br>
+    <b>J</b> — Решительность: планирование<br>
+    <b>P</b> — Спонтанность: гибкость</p>
+  `;
 
-    function updateHistory() {
-      const historyDiv = document.getElementById('history');
-      historyDiv.innerHTML = '<h3>Предыдущие результаты:</h3>';
-      history.forEach(entry => {
-        historyDiv.innerHTML += `
-          <div class="history-entry">
-            <p>${entry.name}: ${entry.type}</p>
-          </div>`;
-      });
-      historyDiv.style.opacity = '1';
-    }
+  document.getElementById('history').innerHTML += `<p>${userName}: ${mbti}</p>`;
+}
 
-    function restartQuiz() {
-      Object.keys(results).forEach(key => results[key] = 0);
-      currentQuestion = 0;
-      document.getElementById('quiz').innerHTML = '';
-      document.getElementById('result').innerHTML = '';
-      document.getElementById('result').style.opacity = '0';
-      document.getElementById('quiz').style.display = 'none';
-      document.getElementById('restartBtn').style.display = 'none';
-      document.getElementById('nameInput').style.display = 'block';
-      document.getElementById('userName').value = '';
-      document.body.style.backgroundColor = 'black';
-    }
+function changeBackground(mbti) {
+  const colors = {
+    INFP: '#8e44ad', ENFP: '#f39c12', INFJ: '#3498db', ENFJ: '#1abc9c',
+    INTJ: '#2c3e50', ENTJ: '#e74c3c', INTP: '#9b59b6', ENTP: '#e67e22',
+    ISFP: '#16a085', ESFP: '#f1c40f', ISTP: '#95a5a6', ESTP: '#34495e',
+    ISFJ: '#27ae60', ESFJ: '#d35400', ISTJ: '#7f8c8d', ESTJ: '#c0392b'
+  };
+  document.body.style.backgroundColor = colors[mbti] || 'black';
+}
 
-    function changeBackgroundColor(type) {
-      const colors = {
-        INTJ: '#2c3e50', ENTJ: '#8e44ad', INTP: '#2980b9', ENTP: '#16a085',
-        INFJ: '#27ae60', ENFJ: '#d35400', INFP: '#f39c12', ENFP: '#e67e22',
-        ISTJ: '#34495e', ESTJ: '#c0392b', ISFJ: '#7f8c8d', ESFJ: '#bdc3c7',
-        ISTP: '#1abc9c', ESTP: '#9b59b6', ISFP: '#f1c40f', ESFP: '#e74c3c'
-      };
-      document.body.style.backgroundColor = colors[type] || 'black';
-    }
-  </script></body>
+function restart() {
+  currentQuestion = 0;
+  scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('explanation').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  document.body.style.backgroundColor = 'black';
+  userName = prompt("Введите новое имя:");
+  if (!userName) userName = "Гость";
+  showQuestion();
+}
+</script></body>
 </html>
